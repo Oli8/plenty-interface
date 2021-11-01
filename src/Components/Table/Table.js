@@ -1,13 +1,14 @@
 import { useTable, useSortBy, useFilters, usePagination } from "react-table";
 import styles from "./table.module.scss";
 import clsx from "clsx";
-import { useEffect } from "react";
+import React, {useEffect} from "react";
 
 /* TODO
- 1. Sorted by indicator has to be added
+ 1. Sorted by indicator has to be added V
  2. Table cell transparent to be removed (mobile view overlap occurs)
- 3. CSS Tweaks
+ 3. CSS Tweaks - done some
  */
+
 const Table = ({ searchQuery, columns, data, className }) => {
   useEffect(() => {
     setFilter("token", searchQuery);
@@ -46,7 +47,13 @@ const Table = ({ searchQuery, columns, data, className }) => {
     },
     useFilters,
     useSortBy,
-    usePagination
+    usePagination,
+    // hooks => {
+    //     hooks.visibleColumns.push(columns => [
+    //         firstColumn,
+    //         ...columns
+    //     ]);
+    // },
   );
 
   return (

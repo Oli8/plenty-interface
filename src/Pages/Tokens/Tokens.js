@@ -6,17 +6,56 @@ import { connect } from 'react-redux';
 import Table from '../../Components/Table/Table';
 import Button from '../../Components/Ui/Buttons/Button';
 import { PuffLoader } from 'react-spinners';
-import { BsSearch, BsStar } from 'react-icons/bs';
+import { BsSearch, BsStar, BsStarFill } from 'react-icons/bs';
 import { FormControl, Image, InputGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 /* TODO
 1. Favorite Token
-2. Token Search
+2. Token Search V
 3. Token symbol
  */
 const Tokens = (props) => {
   const [imgPaths, setImgPath] = useState({});
+  const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+    const value = '; ' + document.cookie;
+    const parts = value.split('; fav_tokens=');
+    if (parts.length === 2) {
+        const fav = parts.pop().split(',');
+        setFavorites(fav);
+    }
+  }, []);
+
+  const onclick = (tokenSymbol) => {
+      const copy = [...favorites];
+        copy.includes(tokenSymbol) ?
+          copy.splice(favorites.indexOf(tokenSymbol), 1)
+          : copy.push(tokenSymbol);
+      setFavorites(copy);
+  }
+
+    const TokenCell = row => {
+        const [isFavorite, setIsFavorite] = useState(false);
+
+        useEffect(() => {
+            console.log('in use effect');
+            setIsFavorite(favorites.includes(row.value));
+        }, [favorites])
+
+        return (
+            <div className="d-flex pl-2 align-items-center">
+                {isFavorite ?
+                    <BsStarFill onClick={() => onclick(row.value)} className="mx-3" />
+                    : <BsStar onClick={() => onclick(row.value)} className="mx-3" />
+                }
+                {' '}
+                <Image src={imgPaths[row.value]?.url} height={32} width={32} alt={''} />
+                <span className="ml-2">{row.value}</span>
+            </div>
+        );
+    };
 
   const loadImageFor = useCallback(
     (token) => {
@@ -95,20 +134,20 @@ const Tokens = (props) => {
       {
         Header: (
           <div className="d-flex pl-2 align-items-center">
-            <BsStar className="mx-3" /> <span className="ml-2">Token</span>
+              <BsStar className="mx-3" />{' '}
+                  <span>Token</span>
           </div>
         ),
         id: 'token',
         accessor: 'symbol_token',
         sortType: stringSort,
-        Cell: (row) => (
+        Cell: (row) => <TokenCell {...row} />/*(
           <div className="d-flex pl-2 align-items-center">
-            <BsStar className="mx-3" />{' '}
+            {/!*<BsStar className="mx-3" />{' '}*!/}
             <Image src={imgPaths[row.value]?.url} height={32} width={32} alt={''} />
             <span className="ml-2">{row.value}</span>
           </div>
-        ),
-        width: 120,
+        ),*/
       },
       {
         Header: 'Price',
